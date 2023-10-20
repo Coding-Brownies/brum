@@ -5,7 +5,6 @@ go 1.21
 require (
 	github.com/faiface/beep v1.1.0
 	github.com/gopxl/beep v1.1.0
-	golang.org/x/term v0.13.0
 )
 
 require (
