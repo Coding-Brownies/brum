@@ -2,8 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	_ "embed"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"math"
@@ -18,14 +19,12 @@ import (
 	"github.com/gopxl/beep/speaker"
 )
 
+//go:embed fan.mp3
+var audio []byte
+
 func main() {
-
-	f, err := os.Open("audio/fan.mp3")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	streamer, format, err := mp3.Decode(f)
+	embeddedReader := io.NopCloser(bytes.NewReader(audio))
+	streamer, format, err := mp3.Decode(embeddedReader)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,8 +80,5 @@ func main() {
 		resampler.SetRatio(math.Exp(val/50) - 0.7)
 		volume.Volume = val / 100
 		speaker.Unlock()
-
-		fmt.Println(val)
 	}
-
 }
