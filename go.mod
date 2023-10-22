@@ -1,4 +1,4 @@
-module brum
+module github.com/just-hms/brum
 
 go 1.21
 
