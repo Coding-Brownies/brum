@@ -43,6 +43,29 @@ func main() {
 		speaker.Play(volume)
 	}()
 
+	dest := 0.0
+	actual := 0.0
+	go func() {
+		for {
+			time.Sleep(1 * time.Millisecond)
+
+			if math.Abs(dest-actual) < 0.1 {
+				continue
+			}
+
+			if dest > actual {
+				actual += 0.1
+			} else {
+				actual -= 0.1
+			}
+
+			speaker.Lock()
+			resampler.SetRatio(math.Exp(actual/40) - 0.7)
+			volume.Volume = math.Exp(actual/30) - 1
+			speaker.Unlock()
+		}
+	}()
+
 	first := true
 
 	reader := bufio.NewReader(os.Stdin)
@@ -52,7 +75,6 @@ func main() {
 			err  error
 		)
 		go func() {
-
 			text, err = reader.ReadString('\n')
 			if first {
 				first = false
@@ -71,14 +93,9 @@ func main() {
 			log.Fatal(err)
 		}
 
-		val, err := strconv.ParseFloat(strings.TrimSpace(text), 64)
+		dest, err = strconv.ParseFloat(strings.TrimSpace(text), 64)
 		if err != nil {
 			continue
 		}
-
-		speaker.Lock()
-		resampler.SetRatio(math.Exp(val/50) - 0.7)
-		volume.Volume = val / 100
-		speaker.Unlock()
 	}
 }
